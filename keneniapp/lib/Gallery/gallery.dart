@@ -1,16 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:shimmer/shimmer.dart';
 
 class GalleryPage extends StatelessWidget {
   final List<String> imageUrls = [
-    // Add URLs of images from Cloudinary or other sources here
-    'https://res.cloudinary.com/your-cloud-name/image/upload/v1/your-image-path1.jpg',
-    'https://res.cloudinary.com/your-cloud-name/image/upload/v1/your-image-path2.jpg',
-    // Add more URLs
+    'a.jpg',
+    'b.jpg',
+    'c.jpg',
+    'd.jpg',
+    'e.jpg',
+    'f.jpg',
+    'a.jpg',
+    'b.jpg',
+    'c.jpg',
+    'd.jpg',
+    'e.jpg',
+    'f.jpg',
+    'a.jpg',
+    'b.jpg',
+    'c.jpg',
+    'd.jpg',
+    'e.jpg',
+    'f.jpg',
+    'a.jpg',
+    'b.jpg',
+    'c.jpg',
+    'd.jpg',
+    'e.jpg',
+    'f.jpg',
+    'a.jpg',
+    'b.jpg',
+    'c.jpg',
+    'd.jpg',
+    'e.jpg',
+    'f.jpg',
+    'a.jpg',
+    'b.jpg',
+    'c.jpg',
+    'd.jpg',
+    'e.jpg',
+    'f.jpg',
+    'z.mp4'
   ];
 
   @override
@@ -21,9 +52,11 @@ class GalleryPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: MasonryGridView.count(
-          crossAxisCount: 3,
+        child: MasonryGridView.builder(
+          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
           itemCount: imageUrls.length,
+          mainAxisSpacing: 8.0,
+          crossAxisSpacing: 8.0,
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () {
@@ -38,24 +71,15 @@ class GalleryPage extends StatelessWidget {
                   ),
                 );
               },
-              child: CachedNetworkImage(
-                imageUrl: imageUrls[index],
-                placeholder: (context, url) => Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    color: Colors.white,
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                child: Image.asset(
+                  imageUrls[index],  // Use Image.asset for local images
+                  fit: BoxFit.cover,
                 ),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-                fit: BoxFit.cover,
               ),
             );
           },
-          mainAxisSpacing: 8.0,
-          crossAxisSpacing: 8.0,
         ),
       ),
     );
@@ -78,7 +102,7 @@ class PhotoViewGalleryPage extends StatelessWidget {
         itemCount: imageUrls.length,
         builder: (context, index) {
           return PhotoViewGalleryPageOptions(
-            imageProvider: CachedNetworkImageProvider(imageUrls[index]),
+            imageProvider: AssetImage(imageUrls[index]),  // Use AssetImage for local images
             minScale: PhotoViewComputedScale.contained,
             maxScale: PhotoViewComputedScale.covered,
           );
