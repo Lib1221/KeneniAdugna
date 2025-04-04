@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "894438475281",
+    "project_id": "keneni-91a60",
+    "storage_bucket": "keneni-91a60.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894438475281:android:25a68b9bf93d66fdc513b0",
+        "android_client_info": {
+          "package_name": "com.example.keneniapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASlSDBBmdDx7QOtf_Yg7Cyq8HzUXNLPH8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
