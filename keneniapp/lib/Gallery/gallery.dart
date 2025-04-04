@@ -10,6 +10,19 @@ class GalleryPage extends StatelessWidget {
     'd.jpg',
     'e.jpg',
     'f.jpg',
+    'g.jpg',
+    'h.jpg',
+    'i.jpg',
+    'j.jpg',
+    'k.jpg',
+    'l.jpg',
+    'm.jpg',
+    'n.jpg',
+    'o.jpg',
+    'p.jpg',
+    'q.jpg',
+    'r.jpg',
+
     // You can add more images as needed
   ];
 
