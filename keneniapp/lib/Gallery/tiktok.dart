@@ -1,10 +1,5 @@
-import 'dart:isolate';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:path_provider/path_provider.dart';
 
 class VideoPage extends StatefulWidget {
   @override
@@ -16,7 +11,7 @@ class _VideoPageState extends State<VideoPage> {
   late List<VideoPlayerController> _videoControllers;
   int _currentIndex = 0;
   bool _isPaused = false;
-  bool _isLiked = false; // Track Like status
+  bool _isLiked = false;
 
   final List<String> videoUrls = [
     'z.mp4',
@@ -37,7 +32,6 @@ class _VideoPageState extends State<VideoPage> {
       return controller;
     }).toList();
     _videoControllers[0].play();
-    _initializeDownloader();
   }
 
   @override
@@ -49,21 +43,13 @@ class _VideoPageState extends State<VideoPage> {
     super.dispose();
   }
 
-  void _initializeDownloader() async {
-    FlutterDownloader.initialize();
-    IsolateNameServer.registerPortWithName(
-      ReceivePort().sendPort,
-      'downloader_send_port',
-    );
-  }
-
   void _onPageChanged(int index) {
     _videoControllers[_currentIndex].pause();
     _currentIndex = index;
     _videoControllers[_currentIndex].play();
     setState(() {
       _isPaused = false;
-      _isLiked = false; // Reset like status when changing videos
+      _isLiked = false;
     });
   }
 
@@ -78,30 +64,6 @@ class _VideoPageState extends State<VideoPage> {
         _isPaused = false;
       }
     });
-  }
-
-  Future<void> _downloadVideo() async {
-    final status = await Permission.storage.request();
-    if (status.isGranted || await Permission.manageExternalStorage.isGranted) {
-      final dir = await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory();
-      await FlutterDownloader.enqueue(
-        url: videoUrls[_currentIndex], // Use remote URL if available
-        savedDir: dir.path,
-        fileName: 'video${_currentIndex + 1}.mp4',
-        showNotification: true,
-        openFileFromNotification: true,
-      );
-      _showDownloadPopup();
-    }
-  }
-
-  void _showDownloadPopup() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Download Completed!"),
-        backgroundColor: Colors.green,
-      ),
-    );
   }
 
   @override
@@ -124,7 +86,6 @@ class _VideoPageState extends State<VideoPage> {
             onTap: _togglePlayPause,
             child: Stack(
               children: [
-                // Video Player
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
@@ -133,7 +94,6 @@ class _VideoPageState extends State<VideoPage> {
                       : Center(child: CircularProgressIndicator()),
                 ),
 
-                // Play Icon
                 if (_isPaused)
                   Center(
                     child: Icon(
@@ -143,7 +103,6 @@ class _VideoPageState extends State<VideoPage> {
                     ),
                   ),
 
-                // Video Info
                 Positioned(
                   bottom: 80,
                   left: 16,
@@ -164,7 +123,6 @@ class _VideoPageState extends State<VideoPage> {
                   ),
                 ),
 
-                // Progress Bar
                 Positioned(
                   bottom: 40,
                   left: 16,
@@ -180,13 +138,11 @@ class _VideoPageState extends State<VideoPage> {
                   ),
                 ),
 
-                // Like, Comment, Share, Download Buttons
                 Positioned(
                   bottom: 100,
                   right: 16,
                   child: Column(
                     children: [
-                      // Like Button
                       IconButton(
                         icon: Icon(
                           _isLiked ? Icons.favorite : Icons.favorite_border,
@@ -201,40 +157,33 @@ class _VideoPageState extends State<VideoPage> {
                       ),
                       SizedBox(height: 16),
 
-                      // Comment Button
                       IconButton(
                         icon: Icon(
                           Icons.comment_outlined,
                           color: Colors.white,
                           size: 30,
                         ),
-                        onPressed: () {
-                          // TODO: Add comment functionality
-                        },
+                        onPressed: () {},
                       ),
                       SizedBox(height: 16),
 
-                      // Share Button
                       IconButton(
                         icon: Icon(
                           Icons.share,
                           color: Colors.white,
                           size: 30,
                         ),
-                        onPressed: () {
-                          // TODO: Add share functionality
-                        },
+                        onPressed: () {},
                       ),
                       SizedBox(height: 16),
 
-                      // Download Button
                       IconButton(
                         icon: Icon(
                           Icons.download,
                           color: Colors.white,
                           size: 30,
                         ),
-                        onPressed: _downloadVideo,
+                        onPressed: () {},
                       ),
                     ],
                   ),
