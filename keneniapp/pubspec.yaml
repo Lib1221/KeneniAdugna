@@ -21,6 +21,9 @@ dependencies:
   # file_picker: ^10.0.0
   firebase_core: 
   cloud_firestore: 
+  shimmer: ^3.0.0
+  share_plus: ^10.1.4
+  cached_network_image: ^3.4.1
   
 
 dev_dependencies:
