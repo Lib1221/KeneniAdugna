@@ -1,34 +1,121 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:photo_view/photo_view.dart';
+import 'package:keneniapp/Gallery/fullscreen.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:shimmer/shimmer.dart';
 
-class GalleryPage extends StatelessWidget {
+class GalleryPage extends StatefulWidget {
+  @override
+  State<GalleryPage> createState() => _GalleryPageState();
+}
+
+class _GalleryPageState extends State<GalleryPage>
+    with AutomaticKeepAliveClientMixin {
+  late Future<List<String>> _imageUrlsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _imageUrlsFuture = _fetchImagesOnce();
+  }
+
+  Future<List<String>> _fetchImagesOnce() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('images')
+        .orderBy('uploaded_at', descending: true)
+        .get();
+
+    return snapshot.docs.map((doc) => doc['url'] as String).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context); // for keepAlive
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Keneni's Gallery"),
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            // Open the drawer when the hamburger menu is pressed
+            Scaffold.of(context).openDrawer();
+          },
+        ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('images') // Ensure this matches your Firestore collection
-            .orderBy('uploaded_at', descending: true)
-            .snapshots(),
+      // Drawer widget
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Menu',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.favorite),
+              title: Text('Favorites'),
+              onTap: () {
+                // Handle favorites action
+                Navigator.pop(context); // Close the drawer
+                // Add your action here
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                // Handle settings action
+                Navigator.pop(context); // Close the drawer
+                // Add your action here
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.share),
+              title: Text('Share'),
+              onTap: () {
+                // Handle share action
+                Navigator.pop(context); // Close the drawer
+                // Add your action here
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.exit_to_app),
+              title: Text('Logout'),
+              onTap: () {
+                // Handle logout action
+                Navigator.pop(context); // Close the drawer
+                // Add your action here
+              },
+            ),
+          ],
+        ),
+      ),
+      body: FutureBuilder<List<String>>(
+        future: _imageUrlsFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return Center(child: CircularProgressIndicator());
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return _buildShimmerGrid();
+          }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty)
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No images uploaded yet.'));
+          }
 
-          List<String> imageUrls = snapshot.data!.docs
-              .map((doc) => doc['url'] as String)
-              .toList();
+          final imageUrls = snapshot.data!;
 
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: MasonryGridView.builder(
+              key: PageStorageKey('gallery_grid'),
               gridDelegate:
                   SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
               itemCount: imageUrls.length,
@@ -52,6 +139,22 @@ class GalleryPage extends StatelessWidget {
                     child: Image.network(
                       imageUrls[index],
                       fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
+                            height: 120,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Colors.grey,
+                        height: 120,
+                        child: Icon(Icons.broken_image, color: Colors.white),
+                      ),
                     ),
                   ),
                 );
@@ -62,100 +165,31 @@ class GalleryPage extends StatelessWidget {
       ),
     );
   }
-}
 
-class FullScreenGalleryPage extends StatefulWidget {
-  final List<String> imageUrls;
-  final int initialIndex;
-
-  FullScreenGalleryPage({
-    required this.imageUrls,
-    required this.initialIndex,
-  });
-
-  @override
-  _FullScreenGalleryPageState createState() => _FullScreenGalleryPageState();
-}
-
-class _FullScreenGalleryPageState extends State<FullScreenGalleryPage> {
-  late PageController _pageController;
-  late int _current;
-
-  @override
-  void initState() {
-    super.initState();
-    _current = widget.initialIndex;
-    _pageController = PageController(initialPage: widget.initialIndex);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Stack(
-        children: [
-          PageView.builder(
-            controller: _pageController,
-            itemCount: widget.imageUrls.length,
-            onPageChanged: (index) => setState(() => _current = index),
-            itemBuilder: (context, index) {
-              return Hero(
-                tag: widget.imageUrls[index] + index.toString(),
-                child: PhotoView(
-                  imageProvider: NetworkImage(widget.imageUrls[index]),
-                  minScale: PhotoViewComputedScale.contained,
-                  maxScale: PhotoViewComputedScale.covered * 2,
-                  backgroundDecoration: BoxDecoration(color: Colors.black),
-                ),
-              );
-            },
-          ),
-          Positioned(
-            bottom: 12,
-            left: 0,
-            right: 0,
-            child: SizedBox(
-              height: 80,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: widget.imageUrls.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () => _pageController.jumpToPage(index),
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 6),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: _current == index ? Colors.white : Colors.transparent,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          widget.imageUrls[index],
-                          width: 60,
-                          height: 80,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+  Widget _buildShimmerGrid() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: MasonryGridView.builder(
+        gridDelegate:
+            SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        itemCount: 12,
+        mainAxisSpacing: 8.0,
+        crossAxisSpacing: 8.0,
+        itemBuilder: (context, index) => Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: Container(
+            height: (100 + (index % 3) * 50).toDouble(),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
