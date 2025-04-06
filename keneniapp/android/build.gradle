@@ -1,3 +1,24 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        // Use HTTPS to avoid using insecure protocols
+        maven {
+            url "https://repo.maven.apache.org/maven2"
+            allowInsecureProtocol = false  // Disabling insecure protocols is recommended
+        }
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        // Updated to match your Gradle plugin version
+        classpath 'com.android.tools.build:gradle:8.2.1'
+
+        // Add other dependencies here as needed
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -6,13 +27,14 @@ allprojects {
 }
 
 rootProject.buildDir = "../build"
+
+// Ensure that each subproject's build directory is configured correctly
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(":app")
+    evaluationDependsOn(":app") // Ensure ':app' is evaluated before other subprojects
 }
 
+// Define a clean task for deleting the build directory
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

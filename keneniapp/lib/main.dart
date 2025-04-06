@@ -1,10 +1,17 @@
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:keneniapp/Gallery/about.dart';
 import 'package:keneniapp/Gallery/gallery.dart';
-import 'package:keneniapp/Gallery/tiktok.dart'; // Ensure this file exists and contains the VideoScrollPage class
-
-void main() => runApp(KeneniMemorialApp());
+import 'package:keneniapp/Gallery/tiktok.dart';
+import 'package:keneniapp/firebase_options.dart'; // Ensure this file exists and contains the VideoScrollPage class
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
+runApp(KeneniMemorialApp());
+ }
 
 class KeneniMemorialApp extends StatelessWidget {
   @override
