@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'keneni-91a60.firebasestorage.app',
     measurementId: 'G-02E3VFY81X',
   );
+
 }

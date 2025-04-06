@@ -1,67 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class GalleryPage extends StatelessWidget {
-  final List<String> imageUrls = [
-    'a.jpg',
-    'b.jpg',
-    'c.jpg',
-    'd.jpg',
-    'e.jpg',
-    'f.jpg',
-    'g.jpg',
-    'h.jpg',
-    'i.jpg',
-    'j.jpg',
-    'k.jpg',
-    'l.jpg',
-    'm.jpg',
-    'n.jpg',
-    'o.jpg',
-    'p.jpg',
-    'q.jpg',
-    'r.jpg',
-
-    // You can add more images as needed
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Keneni's Gallery"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: MasonryGridView.builder(
-          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-          itemCount: imageUrls.length,
-          mainAxisSpacing: 8.0,
-          crossAxisSpacing: 8.0,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FullScreenGalleryPage(
-                      imageUrls: imageUrls,
-                      initialIndex: index,
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('images') // Ensure this matches your Firestore collection
+            .orderBy('uploaded_at', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting)
+            return Center(child: CircularProgressIndicator());
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty)
+            return Center(child: Text('No images uploaded yet.'));
+
+          List<String> imageUrls = snapshot.data!.docs
+              .map((doc) => doc['url'] as String)
+              .toList();
+
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: MasonryGridView.builder(
+              gridDelegate:
+                  SliverSimpleGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+              itemCount: imageUrls.length,
+              mainAxisSpacing: 8.0,
+              crossAxisSpacing: 8.0,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FullScreenGalleryPage(
+                          imageUrls: imageUrls,
+                          initialIndex: index,
+                        ),
+                      ),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: Image.network(
+                      imageUrls[index],
+                      fit: BoxFit.cover,
                     ),
                   ),
                 );
               },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: Image.asset(
-                  imageUrls[index],
-                  fit: BoxFit.cover,
-                ),
-              ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -113,7 +110,7 @@ class _FullScreenGalleryPageState extends State<FullScreenGalleryPage> {
               return Hero(
                 tag: widget.imageUrls[index] + index.toString(),
                 child: PhotoView(
-                  imageProvider: AssetImage(widget.imageUrls[index]),
+                  imageProvider: NetworkImage(widget.imageUrls[index]),
                   minScale: PhotoViewComputedScale.contained,
                   maxScale: PhotoViewComputedScale.covered * 2,
                   backgroundDecoration: BoxDecoration(color: Colors.black),
@@ -132,9 +129,7 @@ class _FullScreenGalleryPageState extends State<FullScreenGalleryPage> {
                 itemCount: widget.imageUrls.length,
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: () {
-                      _pageController.jumpToPage(index);
-                    },
+                    onTap: () => _pageController.jumpToPage(index),
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 6),
                       decoration: BoxDecoration(
@@ -146,7 +141,7 @@ class _FullScreenGalleryPageState extends State<FullScreenGalleryPage> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
+                        child: Image.network(
                           widget.imageUrls[index],
                           width: 60,
                           height: 80,
