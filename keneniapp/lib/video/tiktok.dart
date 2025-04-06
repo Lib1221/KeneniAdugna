@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:share_plus/share_plus.dart';
 
 class VideoPage extends StatefulWidget {
   @override
@@ -25,7 +26,10 @@ class _VideoPageState extends State<VideoPage> {
 
   Future<void> _fetchVideos() async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('videos').orderBy('uploaded_at', descending: true).get();
+      final snapshot = await FirebaseFirestore.instance
+          .collection('videos')
+          .orderBy('uploaded_at', descending: true)
+          .get();
       videoUrls = snapshot.docs.map((doc) => doc['url'] as String).toList();
 
       _videoControllers = videoUrls.map((url) {
@@ -84,15 +88,14 @@ class _VideoPageState extends State<VideoPage> {
     });
   }
 
+  void _shareVideo(String url) {
+    Share.share(url);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text("Keneni's Video"),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : PageView.builder(
@@ -107,14 +110,16 @@ class _VideoPageState extends State<VideoPage> {
                   child: Stack(
                     children: [
                       controller.value.isInitialized
-                          ? SizedBox.expand(child: FittedBox(
-                              fit: BoxFit.cover,
-                              child: SizedBox(
-                                width: controller.value.size.width,
-                                height: controller.value.size.height,
-                                child: VideoPlayer(controller),
+                          ? SizedBox.expand(
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: SizedBox(
+                                  width: controller.value.size.width,
+                                  height: controller.value.size.height,
+                                  child: VideoPlayer(controller),
+                                ),
                               ),
-                            ))
+                            )
                           : Center(child: CircularProgressIndicator()),
 
                       if (_isPaused)
@@ -182,7 +187,7 @@ class _VideoPageState extends State<VideoPage> {
                             SizedBox(height: 16),
                             IconButton(
                               icon: Icon(Icons.share, color: Colors.white, size: 30),
-                              onPressed: () {},
+                              onPressed: () => _shareVideo(videoUrls[index]),
                             ),
                             SizedBox(height: 16),
                             IconButton(
