@@ -1,13 +1,14 @@
+// ignore_for_file: prefer_final_fields, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:share_plus/share_plus.dart';
-
 
 class FullScreenGalleryPage extends StatefulWidget {
   final List<String> imageUrls;
   final int initialIndex;
 
-  FullScreenGalleryPage({
+  const FullScreenGalleryPage({
     required this.imageUrls,
     required this.initialIndex,
   });
@@ -38,13 +39,6 @@ class _FullScreenGalleryPageState extends State<FullScreenGalleryPage> {
     });
   }
 
-  void _setAsWallpaper(String url) {
-    // Implement using platform channel or plugin like `wallpaper_manager_flutter`
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Set as wallpaper (not implemented)")),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final currentImage = widget.imageUrls[_current];
@@ -66,10 +60,6 @@ class _FullScreenGalleryPageState extends State<FullScreenGalleryPage> {
                   : Colors.white,
             ),
             onPressed: () => _toggleFavorite(currentImage),
-          ),
-          IconButton(
-            icon: Icon(Icons.wallpaper, color: Colors.white),
-            onPressed: () => _setAsWallpaper(currentImage),
           ),
           IconButton(
             icon: Icon(Icons.share, color: Colors.white),
