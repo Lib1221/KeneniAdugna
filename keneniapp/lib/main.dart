@@ -1,9 +1,9 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:keneniapp/Gallery/about.dart';
+import 'package:keneniapp/life_summary/about.dart';
 import 'package:keneniapp/Gallery/gallery.dart';
-import 'package:keneniapp/Gallery/tiktok.dart';
+import 'package:keneniapp/video/tiktok.dart';
 import 'package:keneniapp/firebase_options.dart'; // Ensure this file exists and contains the VideoScrollPage class
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
