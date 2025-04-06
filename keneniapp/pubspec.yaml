@@ -18,13 +18,14 @@ dependencies:
   video_player: 
   image_picker:
   dio: 
-  # file_picker: ^10.0.0
   firebase_core: 
   cloud_firestore: 
   shimmer: ^3.0.0
   share_plus: ^10.1.4
   cached_network_image: ^3.4.1
-  
+  carousel_slider: ^5.0.0
+  flutter_native_splash:  
+  flutter_launcher_icons:
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +38,12 @@ flutter:
 
   assets:
     - assets/
+flutter_native_splash:
+  image: assets/a.jpg  # Path to your splash screen image
+  color: "#ffffff"  # Background color of your splash screen
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/a.jpg"  # Path to your app icon image
+  remove_alpha: true        
