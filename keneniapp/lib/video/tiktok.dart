@@ -66,7 +66,6 @@ class _VideoPageState extends State<VideoPage> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error fetching videos: $e');
     }
   }
 
