@@ -1,8 +1,7 @@
-// ignore_for_file: prefer_final_fields, deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FullScreenGalleryPage extends StatefulWidget {
   final List<String> imageUrls;
@@ -20,32 +19,47 @@ class FullScreenGalleryPage extends StatefulWidget {
 class _FullScreenGalleryPageState extends State<FullScreenGalleryPage> {
   late PageController _pageController;
   late int _current;
-  Set<String> _favorites = {};
+  List<String> _favoriteImages = [];
 
   @override
   void initState() {
     super.initState();
     _current = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
+    _loadFavorites(); // Load the favorites list from SharedPreferences
   }
 
-  void _toggleFavorite(String url) {
+  // Load favorite images from SharedPreferences
+  Future<void> _loadFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      if (_favorites.contains(url)) {
-        _favorites.remove(url);
-      } else {
-        _favorites.add(url);
-      }
+      _favoriteImages = prefs.getStringList('favoriteImages') ?? [];
     });
   }
 
-  
+  // Save favorite images to SharedPreferences
+  Future<void> _saveFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setStringList('favoriteImages', _favoriteImages);
+  }
+
+  // Toggle favorite (add/remove)
+  void _toggleFavorite(String url) {
+    setState(() {
+      if (_favoriteImages.contains(url)) {
+        _favoriteImages.remove(url);
+      } else {
+        _favoriteImages.add(url);
+      }
+    });
+    _saveFavorites(); // Save the updated favorites list to SharedPreferences
+  }
 
   @override
   Widget build(BuildContext context) {
     final currentImage = widget.imageUrls[_current];
     final totallink = """$currentImage🌸 Remembering Keneni Adugna
-Explore the Keneni Memorial App — a heartfelt tribute with photos, videos, and a touching life story.
+Explore the Keneni Memorial App — a heartfelt tribute with photos, and a touching life story.
 👉 Download & Experience the Memory""";
 
     return Scaffold(
@@ -57,10 +71,10 @@ Explore the Keneni Memorial App — a heartfelt tribute with photos, videos, and
         actions: [
           IconButton(
             icon: Icon(
-              _favorites.contains(currentImage)
+              _favoriteImages.contains(currentImage)
                   ? Icons.favorite
                   : Icons.favorite_border,
-              color: _favorites.contains(currentImage)
+              color: _favoriteImages.contains(currentImage)
                   ? Colors.red
                   : Colors.white,
             ),
