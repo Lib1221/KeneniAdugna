@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VideoPage extends StatefulWidget {
   @override
@@ -14,14 +15,27 @@ class _VideoPageState extends State<VideoPage> {
   List<String> videoUrls = [];
   int _currentIndex = 0;
   bool _isPaused = false;
-  bool _isLiked = false;
   bool _isLoading = true;
+  Set<String> _favoriteVideos = {};
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    _loadFavorites();
     _fetchVideos();
+  }
+
+  Future<void> _loadFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _favoriteVideos = prefs.getStringList('favorite_videos')?.toSet() ?? {};
+    });
+  }
+
+  Future<void> _saveFavorites() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('favorite_videos', _favoriteVideos.toList());
   }
 
   Future<void> _fetchVideos() async {
@@ -70,7 +84,6 @@ class _VideoPageState extends State<VideoPage> {
     }
     setState(() {
       _isPaused = false;
-      _isLiked = false;
     });
   }
 
@@ -89,7 +102,10 @@ class _VideoPageState extends State<VideoPage> {
   }
 
   void _shareVideo(String url) {
-    Share.share(url);
+    final totallink = """$url 🌸 Remembering Keneni Adugna
+Explore the Keneni Memorial App — a heartfelt tribute with photos, videos, and a touching life story.
+👉 Download & Experience the Memory""";
+    Share.share(totallink);
   }
 
   @override
@@ -105,6 +121,9 @@ class _VideoPageState extends State<VideoPage> {
               onPageChanged: _onPageChanged,
               itemBuilder: (context, index) {
                 final controller = _videoControllers[index];
+                final videoUrl = videoUrls[index];
+                final isLiked = _favoriteVideos.contains(videoUrl);
+
                 return GestureDetector(
                   onTap: _togglePlayPause,
                   child: Stack(
@@ -136,7 +155,10 @@ class _VideoPageState extends State<VideoPage> {
                           children: [
                             Text(
                               '@Keneni_memorial',
-                              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
                             ),
                             SizedBox(height: 4),
                             Text(
@@ -169,25 +191,31 @@ class _VideoPageState extends State<VideoPage> {
                           children: [
                             IconButton(
                               icon: Icon(
-                                _isLiked ? Icons.favorite : Icons.favorite_border,
-                                color: _isLiked ? Colors.red : Colors.white,
+                                isLiked ? Icons.favorite : Icons.favorite_border,
+                                color: isLiked ? Colors.red : Colors.white,
                                 size: 30,
                               ),
-                              onPressed: () {
+                              onPressed: () async {
                                 setState(() {
-                                  _isLiked = !_isLiked;
+                                  if (_favoriteVideos.contains(videoUrl)) {
+                                    _favoriteVideos.remove(videoUrl);
+                                  } else {
+                                    _favoriteVideos.add(videoUrl);
+                                  }
                                 });
+                                await _saveFavorites();
                               },
                             ),
                             SizedBox(height: 16),
                             IconButton(
-                              icon: Icon(Icons.comment_outlined, color: Colors.white, size: 30),
+                              icon: Icon(Icons.comment_outlined,
+                                  color: Colors.white, size: 30),
                               onPressed: () {},
                             ),
                             SizedBox(height: 16),
                             IconButton(
                               icon: Icon(Icons.share, color: Colors.white, size: 30),
-                              onPressed: () => _shareVideo(videoUrls[index]),
+                              onPressed: () => _shareVideo(videoUrl),
                             ),
                             SizedBox(height: 16),
                             IconButton(
