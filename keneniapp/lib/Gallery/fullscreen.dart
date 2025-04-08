@@ -39,9 +39,14 @@ class _FullScreenGalleryPageState extends State<FullScreenGalleryPage> {
     });
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     final currentImage = widget.imageUrls[_current];
+    final totallink = """$currentImage🌸 Remembering Keneni Adugna
+Explore the Keneni Memorial App — a heartfelt tribute with photos, videos, and a touching life story.
+👉 Download & Experience the Memory""";
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -63,7 +68,7 @@ class _FullScreenGalleryPageState extends State<FullScreenGalleryPage> {
           ),
           IconButton(
             icon: Icon(Icons.share, color: Colors.white),
-            onPressed: () => Share.share(currentImage),
+            onPressed: () => Share.share(totallink),
           ),
         ],
         leading: IconButton(
