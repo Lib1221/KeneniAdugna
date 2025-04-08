@@ -26,6 +26,7 @@ class _VideoPageState extends State<VideoPage> {
     _fetchVideos();
   }
 
+  // Load favorite videos from SharedPreferences
   Future<void> _loadFavorites() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -33,11 +34,13 @@ class _VideoPageState extends State<VideoPage> {
     });
   }
 
+  // Save favorite videos to SharedPreferences
   Future<void> _saveFavorites() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('favorite_videos', _favoriteVideos.toList());
   }
 
+  // Fetch videos from Firestore
   Future<void> _fetchVideos() async {
     try {
       final snapshot = await FirebaseFirestore.instance
@@ -76,6 +79,7 @@ class _VideoPageState extends State<VideoPage> {
     super.dispose();
   }
 
+  // Handle page change
   void _onPageChanged(int index) {
     if (_videoControllers.isNotEmpty) {
       _videoControllers[_currentIndex].pause();
@@ -87,6 +91,7 @@ class _VideoPageState extends State<VideoPage> {
     });
   }
 
+  // Toggle play/pause for the current video
   void _togglePlayPause() {
     if (_videoControllers.isEmpty) return;
     final videoController = _videoControllers[_currentIndex];
@@ -101,6 +106,7 @@ class _VideoPageState extends State<VideoPage> {
     });
   }
 
+  // Share video
   void _shareVideo(String url) {
     final totallink = """$url 🌸 Remembering Keneni Adugna
 Explore the Keneni Memorial App — a heartfelt tribute with photos, videos, and a touching life story.
