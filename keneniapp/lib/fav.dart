@@ -25,7 +25,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _favoriteImages = prefs.getStringList('favoriteImages') ?? [];
-      _favoriteVideos = prefs.getStringList('favoriteVideos') ?? [];
+      _favoriteVideos = prefs.getStringList('favorite_videos') ?? [];
     });
   }
 
@@ -49,12 +49,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 
-  // Print all video URLs
-  void _printFavoriteVideos() {
-    for (var url in _favoriteVideos) {
-      print("Favorite Video URL: $url");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,41 +56,35 @@ class _FavoritesPageState extends State<FavoritesPage> {
       appBar: AppBar(
         title: Text("Favorites"),
         backgroundColor: Colors.black,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.print),
-            onPressed: _printFavoriteVideos, // Print video URLs
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile Header
+            // Profile Header with modern design
             Center(
               child: Column(
                 children: [
                   CircleAvatar(
-                    radius: 50,
+                    radius: 70, // Increased profile image size
                     backgroundImage: AssetImage(_profileImage),
                     backgroundColor: Colors.white,
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 20),
                   Text(
                     _profileName,
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 30, // Increased font size
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  SizedBox(height: 10),
                   Text(
-                    "This is your favorite gallery.",
+                    "In Loving Memory ❤️",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       color: Colors.white70,
                     ),
                   ),
@@ -117,16 +105,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      elevation: 6,
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      elevation: 8, // Added elevation for modern look
+                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16), // Increased padding
+                      textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     child: Text(
                       'Images',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                   SizedBox(width: 16),
@@ -137,16 +122,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      elevation: 6,
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      elevation: 8,
+                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+                      textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     child: Text(
                       'Videos',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -187,14 +169,14 @@ class _FavoritesPageState extends State<FavoritesPage> {
             }
           },
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16), // Added more rounded corners
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Colors.grey.withOpacity(0.6),
-                  width: 2,
+                  color: Colors.grey.withOpacity(0.4), // Lightened border color
+                  width: 1.5,
                 ),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16), // More rounded corners
               ),
               child: isVideo
                   ? Container(
@@ -202,7 +184,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       child: Icon(
                         Icons.play_arrow,
                         color: Colors.white,
-                        size: 50,
+                        size: 60, // Increased play icon size
                       ),
                     )
                   : Image.network(
