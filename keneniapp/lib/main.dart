@@ -141,27 +141,36 @@ class _HomePageState extends State<HomePage> {
           ),
 
           Padding(
-            padding: const EdgeInsets.all(5),
+            padding: const EdgeInsets.all(0),
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Divider(color: Colors.white,)
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Text(
-                'Liben Adugna',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white70,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ),
+  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+  child: Align(
+    alignment: Alignment.bottomCenter,
+    child: Text(
+      'Liben Adugna',
+      style: TextStyle(
+        fontSize: 18, // Slightly larger font size
+        fontWeight: FontWeight.w600, // Stronger emphasis on the name
+        color: Colors.white.withOpacity(0.85), // More refined white shade
+        letterSpacing: 1.5, // Slightly more spacing for clarity
+        fontFamily: 'SourceCodePro', // Developer-style font family
+        shadows: [
+          Shadow(
+            color: Colors.black.withOpacity(0.5), // Darker shadow for depth
+            offset: Offset(2, 2),
+            blurRadius: 4,
           ),
+        ],
+      ),
+    ),
+  ),
+)
+,
         ],
       ),
     ),
