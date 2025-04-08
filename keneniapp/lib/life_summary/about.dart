@@ -16,10 +16,7 @@ class _LifeSummaryPageState extends State<LifeSummaryPage> {
   // List of quotes that Keneni believed in or said
   final List<String> quotes = [
     "Every person that you see on social media is not like you see.",
-    "Live with passion, and love what you do.",
-    "Success is not defined by what you have, but by the difference you make.",
-    "Believe in yourself and you will go far.",
-    "Your value doesn't decrease based on someone's inability to see your worth."
+    "God is above all",
   ];
 
   @override
