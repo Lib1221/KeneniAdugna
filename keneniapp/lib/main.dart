@@ -1,10 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:keneniapp/life_summary/about.dart'; // Importing the LifeSummaryPage
-import 'package:keneniapp/Gallery/gallery.dart'; // Importing the GalleryPage
-import 'package:keneniapp/video/tiktok.dart'; // Importing the VideoPage
+import 'package:keneniapp/fav.dart';
+import 'package:keneniapp/life_summary/about.dart';
+import 'package:keneniapp/Gallery/gallery.dart';
+import 'package:keneniapp/video/tiktok.dart';
 import 'package:keneniapp/firebase_options.dart';
-import 'splash_screen.dart'; // Import splash screen
+import 'splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +29,7 @@ class KeneniMemorialApp extends StatelessWidget {
           unselectedItemColor: Colors.white70,
         ),
       ),
-      home: SplashScreen(), // Use SplashScreen as the initial route
+      home: SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -43,15 +44,23 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    GalleryPage(),  // Imported GalleryPage
-    VideoPage(),    // Imported VideoPage
-    LifeSummaryPage(),  // Imported LifeSummaryPage
+    GalleryPage(),
+    VideoPage(),
+    LifeSummaryPage(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _openFavoritesPage() {
+    Navigator.pop(context); // Close drawer
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FavoritesPage()),
+    );
   }
 
   @override
@@ -61,44 +70,99 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Keneni Memorial'),
       ),
       drawer: Drawer(
-        child: Container(
-          color: Colors.black, // Set background color of the sidebar to black
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              // Image header at the top of the sidebar
-              Container(
-                height: 180,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/a.jpg'), // Image for header
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              _buildDrawerItem(Icons.photo, "Gallery", 0),
-              _buildDrawerItem(Icons.video_collection, "Videos", 1),
-              _buildDrawerItem(Icons.favorite, "Summary", 2),
-              _buildDrawerItem(Icons.settings, "Settings", -1),
-              _buildDrawerItem(Icons.star, "Favourite", -2),
-              const Divider(), // Break line before footer
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Liben Adugna',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white, // White color for footer text
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+  child: Container(
+    color: Colors.black,
+    child: SafeArea(
+      child: Column(
+
+        children: [
+          Container(
+  height: 180,
+  margin: EdgeInsets.only(left: 16, top: 24, right: 16, bottom: 0),
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(20),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.4),
+        blurRadius: 12,
+        offset: Offset(0, 6),
       ),
-      body: _pages[_selectedIndex], // Display pages based on selected index
+    ],
+    image: DecorationImage(
+      image: AssetImage('assets/a.jpg'),
+      fit: BoxFit.cover,
+      alignment: Alignment.topCenter,
+      colorFilter: ColorFilter.mode(
+        Colors.black.withOpacity(0.2),
+        BlendMode.darken,
+      ),
+    ),
+  ),
+  child: Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(20),
+      gradient: LinearGradient(
+        colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
+    ),
+    alignment: Alignment.bottomLeft,
+    padding: EdgeInsets.all(16),
+    child: Text(
+      'Keneni Adugna',
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        shadows: [
+          Shadow(
+            color: Colors.black.withOpacity(0.8),
+            blurRadius: 6,
+            offset: Offset(1, 2),
+          ),
+        ],
+      ),
+    ),
+  ),
+)
+,
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                _buildDrawerItem(Icons.photo, "Gallery", 0),
+                _buildDrawerItem(Icons.video_collection, "Videos", 1),
+                _buildDrawerItem(Icons.favorite, "Summary", 2),
+                _buildDrawerItem(Icons.star, "Favourite", -2),
+                _buildDrawerItem(Icons.settings, "Settings", -1),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Text(
+                'Liben Adugna',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white70,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  ),
+),
+
+      
+      
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -121,27 +185,59 @@ class _HomePageState extends State<HomePage> {
   }
 
   ListTile _buildDrawerItem(IconData icon, String title, int index) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.white), // White icon color
-      title: Text(
-        title,
-        style: TextStyle(color: Colors.white), // White text color
+  return ListTile(
+    leading: Icon(
+      icon,
+      color: Colors.white,
+      size: 26, // Slightly larger for a more modern touch
+    ),
+    title: Text(
+      title,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 18, // Slightly larger font size
+        fontWeight: FontWeight.w600,
+        letterSpacing: 1.1,
+        shadows: [
+          Shadow(
+            color: Colors.black.withOpacity(0.6),
+            offset: Offset(0, 1),
+            blurRadius: 4,
+          ),
+        ],
       ),
-      onTap: () {
-        if (index >= 0) {
-          _onItemTapped(index);
-        } else {
-          // Handle special cases like Settings or Favourite
-          if (index == -1) {
-            // Handle Settings
-            print('Settings tapped');
-          } else if (index == -2) {
-            // Handle Favourite
-            print('Favourite tapped');
-          }
+    ),
+    onTap: () {
+      if (index >= 0) {
+        _onItemTapped(index);
+        Navigator.pop(context);
+      } else {
+        if (title == "Settings") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Settings feature coming soon!")),
+          );
+          Navigator.pop(context);
+        } else if (index == -2) {
+          _openFavoritesPage();
         }
-        Navigator.pop(context); // Close the drawer
-      },
-    );
-  }
+      }
+    },
+    tileColor: index == _selectedIndex
+        ? Colors.redAccent.withOpacity(0.2)  // Highlight active item
+        : Colors.transparent,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+    hoverColor: Colors.redAccent.withOpacity(0.1),  // Hover effect
+    onLongPress: () {
+      // Example of long press effect, can be customized
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Long pressed $title")),
+      );
+    },
+  );
 }
+
+  
+  }
