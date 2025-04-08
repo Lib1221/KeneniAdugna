@@ -139,8 +139,16 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
+
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(5),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Divider(color: Colors.white,)
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Text(
