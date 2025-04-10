@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:keneniapp/Gallery/fullscreen.dart';
+import 'package:keneniapp/videoPlayer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:video_player/video_player.dart';
 
 class FavoritesPage extends StatefulWidget {
   @override
@@ -11,7 +13,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   List<String> _favoriteImages = [];
   List<String> _favoriteVideos = [];
   final String _profileName = "Keneni Adugna";
-  final String _profileImage = 'a.jpg'; // Replace with actual profile image URL
+  final String _profileImage = 'a.jpg';
   bool _showImages = true;
 
   @override
@@ -20,7 +22,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
     _loadFavorites();
   }
 
-  // Load favorite images and videos from SharedPreferences
   Future<void> _loadFavorites() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -29,14 +30,12 @@ class _FavoritesPageState extends State<FavoritesPage> {
     });
   }
 
-  // Toggle between image and video favorites
   void _toggleFavoriteType(bool isImage) {
     setState(() {
       _showImages = isImage;
     });
   }
 
-  // Navigate to Full-Screen Gallery on Image Click
   void _openFullScreenGallery(int index) {
     Navigator.push(
       context,
@@ -49,94 +48,59 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 
+  void _openVideoPlayer(String url) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FavoriteVideoViewer(videoUrl: url),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text("Favorites"),
         backgroundColor: Colors.black,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile Header with modern design
-            Center(
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                image: DecorationImage(
+                  image: AssetImage(_profileImage),
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+                ),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 70, // Increased profile image size
-                    backgroundImage: AssetImage(_profileImage),
-                    backgroundColor: Colors.white,
-                  ),
-                  SizedBox(height: 20),
                   Text(
                     _profileName,
-                    style: TextStyle(
-                      fontSize: 30, // Increased font size
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    "In Loving Memory ❤️",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white70,
-                    ),
-                  ),
+                  SizedBox(height: 8),
+                  Text("In Loving Memory ❤️", style: TextStyle(fontSize: 16, color: Colors.white70)),
                 ],
               ),
             ),
-            SizedBox(height: 30),
-
-            // Toggle Buttons (Image / Video)
-            Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => _toggleFavoriteType(true),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _showImages ? Colors.red : Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 8, // Added elevation for modern look
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16), // Increased padding
-                      textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    child: Text(
-                      'Images',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  ElevatedButton(
-                    onPressed: () => _toggleFavoriteType(false),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: !_showImages ? Colors.red : Colors.grey,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 8,
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-                      textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    child: Text(
-                      'Videos',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
+            SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildToggleButton("Images", _showImages, () => _toggleFavoriteType(true)),
+                SizedBox(width: 16),
+                _buildToggleButton("Videos", !_showImages, () => _toggleFavoriteType(false)),
+              ],
             ),
             SizedBox(height: 20),
-
-            // Display the Grid (either Images or Videos)
             Expanded(
               child: _showImages
                   ? _buildFavoriteGrid(_favoriteImages, false)
@@ -148,53 +112,98 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 
-  // Build the grid of favorite items (images or videos)
+  Widget _buildToggleButton(String label, bool isActive, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isActive ? Colors.red : Colors.grey[800],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+      ),
+      child: Text(label, style: TextStyle(fontSize: 16, color: Colors.white)),
+    );
+  }
+
   Widget _buildFavoriteGrid(List<String> favorites, bool isVideo) {
+    // Shuffle the favorite videos to show random order
+    favorites.shuffle();
+
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
       ),
       itemCount: favorites.length,
       itemBuilder: (context, index) {
         String url = favorites[index];
         return GestureDetector(
           onTap: () {
-            if (!isVideo) {
-              // Open full-screen gallery on image click
-              _openFullScreenGallery(index);
-            } else {
-              // Handle video tap if needed (e.g., play video)
-            }
+            isVideo ? _openVideoPlayer(url) : _openFullScreenGallery(index);
           },
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(16), // Added more rounded corners
+            borderRadius: BorderRadius.circular(14),
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey.withOpacity(0.4), // Lightened border color
-                  width: 1.5,
-                ),
-                borderRadius: BorderRadius.circular(16), // More rounded corners
+                border: Border.all(color: Colors.white24, width: 1.2),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: isVideo
-                  ? Container(
-                      color: Colors.black,
-                      child: Icon(
-                        Icons.play_arrow,
-                        color: Colors.white,
-                        size: 60, // Increased play icon size
-                      ),
-                    )
+                  ? VideoPlayerItem(videoUrl: url)
                   : Image.network(
                       url,
                       fit: BoxFit.cover,
+                      loadingBuilder: (context, child, progress) {
+                        if (progress == null) return child;
+                        return Center(child: CircularProgressIndicator(color: Colors.red));
+                      },
                     ),
             ),
           ),
         );
       },
     );
+  }
+}
+
+class VideoPlayerItem extends StatefulWidget {
+  final String videoUrl;
+
+  VideoPlayerItem({required this.videoUrl});
+
+  @override
+  _VideoPlayerItemState createState() => _VideoPlayerItemState();
+}
+
+class _VideoPlayerItemState extends State<VideoPlayerItem> {
+  late VideoPlayerController _controller;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.network(widget.videoUrl)
+      ..initialize().then((_) {
+        setState(() {
+          _isInitialized = true;
+        });
+      });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _isInitialized
+        ? Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: VideoPlayer(_controller),
+          )
+        : Center(child: CircularProgressIndicator(color: Colors.red));
   }
 }
