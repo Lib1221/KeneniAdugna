@@ -104,14 +104,19 @@ class _LifeSummaryPageState extends State<LifeSummaryPage> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Keneni Adugna was born in Michit, Oromia, where she spent her early years growing up in a community filled with warmth and love. "
-                      "Her journey toward academic excellence began at a young age. After finishing her primary education, she joined the prestigious Adama Science and Technology University, where she pursued a degree in Hydraulics Engineering.\n\n"
-                      "Her passion for learning did not stop there. Keneni soon discovered her love for the arts, particularly modeling. "
-                      "She entered the world of modeling with grace and soon became a well-known figure, participating in various beauty contests and media projects.\n\n"
-                      "Keneni also ventured into acting, gracing the screen in several movies and music videos, where her talent and charisma captivated audiences. "
-                      "She was admired not only for her beauty but also for her vibrant personality and the kindness she radiated. Her journey was one of self-discovery, growth, and immense potential, and she touched the lives of countless people.\n\n"
-                      "Despite her rising fame, Keneni always remained humble and grounded, continually striving to inspire others to follow their dreams. "
-                      "Her legacy lives on, inspiring all those who were fortunate enough to know her.",
+                      "Keneni Adugna was born in 1991 in the Ethiopian calendar, in the town of Michita, located in the Daro Labu district of the Oromia region. She was the daughter of Adugna Wako and Aster Mekonin. Keneni grew up surrounded by love and happiness, playing joyfully in her community. As she matured, she embraced her faith and became a dedicated member of the Orthodox Church, allowing her life to be guided by God's teachings.\n\n"
+                          "After completing her Grade 12 education, Keneni successfully passed the entrance exam and gained admission to Arba Minch University, where she began her studies in Hydraulics Engineering. It was during her time at university that she discovered her passion for modeling, which she pursued alongside her academic journey.\n\n"
+
+                          "Keneni graduated with a degree in Hydraulics Engineering in 2011, but her interests in the arts continued to flourish. She was not only recognized for her academic achievements but also for her contributions to modeling. She gained popularity in the modeling industry, participating in various beauty contests and media projects. Her journey in the entertainment world extended to acting, where she graced the screen in several movies and music videos. Audiences were captivated by her talent, beauty, and vibrant personality.\n\n"
+
+                          "Throughout her career, Keneni remained grounded, always striving to inspire others and encourage them to follow their dreams. Her humility and kindness earned her admiration from those who knew her. Despite her rising fame, she never lost touch with her roots.\n\n"
+
+                          "Keneni was also passionate about making a difference in her community. She worked with the Oromia Water Limit Mahber, contributing her expertise to vital water projects. Additionally, she became a voice for the voiceless, especially during times of famine, advocating for the people of Borana and Salale.\n\n"
+
+                          "In addition to her work in modeling and acting, Keneni ventured into film production, contributing to the creation of Ethiopian movies, such as 'Rebirra.' Her impact on the arts and society was profound, and her legacy continues to inspire many.\n\n"
+
+                          "Tragically, Keneni's life was cut short on July 2, 2017, when she passed away under mysterious circumstances after falling from the fifth floor. Despite her untimely departure, her legacy of love, beauty, and service to others remains alive, and she is dearly missed by all who had the privilege of knowing her.",
+
                       style: TextStyle(
                         color: Colors.white60,
                         fontSize: 16,
