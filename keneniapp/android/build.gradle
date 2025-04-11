@@ -13,8 +13,7 @@ buildscript {
 
     dependencies {
         // Updated to match your Gradle plugin version
-        classpath 'com.android.tools.build:gradle:8.2.1'
-
+        classpath 'com.android.tools.build:gradle:8.6.0'
         // Add other dependencies here as needed
     }
 }

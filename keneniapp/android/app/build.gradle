@@ -10,12 +10,13 @@ plugins {
 
 android {
     namespace = "com.example.keneniapp"
-    compileSdk = 35
+    compileSdk = 35 // ✅ already good, minimum required is 34
     ndkVersion = project.flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true // ✅ Desugaring enabled
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
@@ -23,14 +24,13 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.keneniapp"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/docs/deployment/android#updating-the-default-android-project
         minSdk = 23
-        targetSdk = 34  // You can update this to the latest targetSdk if needed.
+        targetSdk = 34
         versionCode = project.flutter.versionCode
         versionName = project.flutter.versionName
+
+        multiDexEnabled true // ✅ Enable MultiDex
     }
 
     buildTypes {
@@ -44,4 +44,10 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2' // ✅ Desugaring lib
+    implementation 'androidx.window:window:1.0.0' // ✅ Window lib
+    implementation 'androidx.window:window-java:1.0.0' // ✅ Window Java lib
 }
