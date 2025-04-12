@@ -1,64 +1,44 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:keneniapp/fav.dart';
 import 'package:keneniapp/life_summary/about.dart';
 import 'package:keneniapp/Gallery/gallery.dart';
+import 'package:keneniapp/permission.dart';
 import 'package:keneniapp/upload.dart';
 import 'package:keneniapp/video/tiktok.dart';
 import 'package:keneniapp/firebase_options.dart';
-import 'notifaction.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'splash_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await requestStoragePermission();
 
-  // Initialize TimeZone data
+  // Initialize timezone
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('Africa/Addis_Ababa'));
 
-  // Initialize notification settings
+  // Initialize local notifications
   const AndroidInitializationSettings androidSettings =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
-
+      AndroidInitializationSettings('@mipmap/ic_launcher');
   const InitializationSettings initSettings =
-  InitializationSettings(android: androidSettings);
+      InitializationSettings(android: androidSettings);
 
-  // Initialize the notification plugin
   await flutterLocalNotificationsPlugin.initialize(initSettings);
 
   // Initialize Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  await initializeNotifications();
   // Run the app
   runApp(KeneniMemorialApp());
+
 }
-
-
-
-
-Future<void> requestStoragePermission() async {
-  if (await Permission.storage.request().isGranted) {
-    // Storage permission granted
-    print("✅ Storage permission granted");
-  } else {
-    // Storage permission denied
-    print("❌ Storage permission denied");
-  }
-}
-
 
 class KeneniMemorialApp extends StatelessWidget {
   @override
@@ -320,8 +300,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-
-
-
-
