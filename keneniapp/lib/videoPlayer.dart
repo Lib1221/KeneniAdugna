@@ -1,3 +1,4 @@
+// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:share_plus/share_plus.dart';
