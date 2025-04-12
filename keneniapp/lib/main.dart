@@ -8,6 +8,7 @@ import 'package:keneniapp/upload.dart';
 import 'package:keneniapp/video/tiktok.dart';
 import 'package:keneniapp/firebase_options.dart';
 import 'notifaction.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -20,6 +21,7 @@ FlutterLocalNotificationsPlugin();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await requestStoragePermission();
 
   // Initialize TimeZone data
   tz.initializeTimeZones();
@@ -44,6 +46,18 @@ void main() async {
   runApp(KeneniMemorialApp());
 }
 
+
+
+
+Future<void> requestStoragePermission() async {
+  if (await Permission.storage.request().isGranted) {
+    // Storage permission granted
+    print("✅ Storage permission granted");
+  } else {
+    // Storage permission denied
+    print("❌ Storage permission denied");
+  }
+}
 
 
 class KeneniMemorialApp extends StatelessWidget {
