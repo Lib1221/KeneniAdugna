@@ -62,7 +62,6 @@ class _VideoPageState extends State<VideoPage> {
     });
 
     try {
-      // Fetch all video documents from Firestore
       final snapshot = await FirebaseFirestore.instance
           .collection('videos')
           .orderBy('uploaded_at', descending: true)
@@ -76,13 +75,10 @@ class _VideoPageState extends State<VideoPage> {
         return;
       }
 
-      // Get a random subset of videos from the fetched documents
       List<DocumentSnapshot> allDocs = snapshot.docs;
       List<DocumentSnapshot> randomDocs = _getRandomSubset(allDocs, _batchSize);
-
-      // Add the URLs of the selected random videos to the list
       List<String> randomVideoUrls =
-          randomDocs.map((doc) => doc['url'] as String).toList();
+      randomDocs.map((doc) => doc['url'] as String).toList();
       videoUrls.addAll(randomVideoUrls);
 
       _videoControllers = videoUrls.map((url) {
@@ -101,8 +97,7 @@ class _VideoPageState extends State<VideoPage> {
       setState(() {
         _isFetching = false;
         _isLoading = false;
-        _hasMore = videoUrls.length <
-            snapshot.docs.length; // Check if there are more videos to fetch
+        _hasMore = videoUrls.length < snapshot.docs.length;
       });
     } catch (e) {
       setState(() {
@@ -112,65 +107,56 @@ class _VideoPageState extends State<VideoPage> {
     }
   }
 
-  // Function to get a random subset of documents
   List<DocumentSnapshot> _getRandomSubset(
       List<DocumentSnapshot> allDocs, int batchSize) {
     final random = Random();
-    allDocs.shuffle(random); // Shuffle the list of documents
-    return allDocs
-        .take(batchSize)
-        .toList(); // Take the first 'batchSize' documents
+    allDocs.shuffle(random);
+    return allDocs.take(batchSize).toList();
   }
 
+  Future<void> _downloadVideo(String url) async {
+    if (kIsWeb) {
+      try {
+        print("Web download initiated");
 
-Future<void> _downloadVideo(String url) async {
-  if (kIsWeb) {
-    try {
-      print("Web download initiated");
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Video download started!')),
-      );
-    } catch (e) {
-      print('Error downloading video on web: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error downloading video.')),
-      );
-    }
-  } else {
-    try {
-      // Request storage permissions (for Android)
-      if (Platform.isAndroid) {
-        var status = await Permission.storage.request();
-        if (!status.isGranted) {
-          print("Permission denied");
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Storage permission is required.')),
-          );
-          return;
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Video download started!')),
+        );
+      } catch (e) {
+        print('Error downloading video on web: \$e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error downloading video.')),
+        );
       }
+    } else {
+      try {
+        if (Platform.isAndroid) {
+          var status = await Permission.storage.request();
+          if (!status.isGranted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Storage permission is required.')),
+            );
+            return;
+          }
+        }
 
-      // Get the app's document directory path to save the file
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      String filePath = '${appDocDir.path}/KeneniMemorialVideo.mp4';
+        Directory appDocDir = await getApplicationDocumentsDirectory();
+        String filePath = '\${appDocDir.path}/KeneniMemorialVideo.mp4';
 
-      // Use Dio to download the file
-      Dio dio = Dio();
-      await dio.download(url, filePath);
+        Dio dio = Dio();
+        await dio.download(url, filePath);
 
-      // Notify the user that the download is complete
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Video downloaded successfully!')),
-      );
-    } catch (e) {
-      print('Error downloading video on mobile: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error downloading video.')),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Video downloaded successfully!')),
+        );
+      } catch (e) {
+        print('Error downloading video on mobile: \$e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error downloading video.')),
+        );
+      }
     }
   }
-}
 
   @override
   void dispose() {
@@ -181,7 +167,6 @@ Future<void> _downloadVideo(String url) async {
     super.dispose();
   }
 
-  // Handle page change
   void _onPageChanged(int index) {
     if (_videoControllers.isNotEmpty) {
       _videoControllers[_currentIndex].pause();
@@ -193,7 +178,6 @@ Future<void> _downloadVideo(String url) async {
     });
   }
 
-  // Toggle play/pause for the current video
   void _togglePlayPause() {
     if (_videoControllers.isEmpty) return;
     final videoController = _videoControllers[_currentIndex];
@@ -208,9 +192,8 @@ Future<void> _downloadVideo(String url) async {
     });
   }
 
-  // Share video
   void _shareVideo(String url) {
-    final totallink = """$url 🌸 Remembering Keneni Adugna
+    final totallink = """\$url 🌸 Remembering Keneni Adugna
 Explore the Keneni Memorial App — a heartfelt tribute with photos, videos, and a touching life story.
 👉 Download & Experience the Memory""";
     Share.share(totallink);
@@ -223,130 +206,127 @@ Explore the Keneni Memorial App — a heartfelt tribute with photos, videos, and
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : PageView.builder(
-              controller: _pageController,
-              scrollDirection: Axis.vertical,
-              itemCount: videoUrls.length +
-                  (_isLoading ? 1 : 0), // Show loading indicator when fetching
-              onPageChanged: _onPageChanged,
-              itemBuilder: (context, index) {
-                if (index >= videoUrls.length) {
-                  return Center(
-                      child:
-                          CircularProgressIndicator()); // Show loading indicator for new batch
-                }
+        controller: _pageController,
+        scrollDirection: Axis.vertical,
+        itemCount: videoUrls.length + (_isLoading ? 1 : 0),
+        onPageChanged: _onPageChanged,
+        itemBuilder: (context, index) {
+          if (index >= videoUrls.length) {
+            return Center(child: CircularProgressIndicator());
+          }
 
-                final controller = _videoControllers[index];
-                final videoUrl = videoUrls[index];
-                final isLiked = _favoriteVideos.contains(videoUrl);
+          final controller = _videoControllers[index];
+          final videoUrl = videoUrls[index];
+          final isLiked = _favoriteVideos.contains(videoUrl);
 
-                return GestureDetector(
-                  onTap: _togglePlayPause,
-                  child: Stack(
+          return GestureDetector(
+            onTap: _togglePlayPause,
+            child: Stack(
+              children: [
+                controller.value.isInitialized
+                    ? SizedBox.expand(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: controller.value.size.width,
+                      height: controller.value.size.height,
+                      child: VideoPlayer(controller),
+                    ),
+                  ),
+                )
+                    : Center(child: CircularProgressIndicator()),
+                if (_isPaused)
+                  Center(
+                    child: Icon(Icons.play_arrow,
+                        color: Colors.white, size: 80),
+                  ),
+                Positioned(
+                  bottom: 80,
+                  left: 16,
+                  right: 16,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      controller.value.isInitialized
-                          ? SizedBox.expand(
-                              child: FittedBox(
-                                fit: BoxFit.cover,
-                                child: SizedBox(
-                                  width: controller.value.size.width,
-                                  height: controller.value.size.height,
-                                  child: VideoPlayer(controller),
-                                ),
-                              ),
-                            )
-                          : Center(child: CircularProgressIndicator()),
-                      if (_isPaused)
-                        Center(
-                          child: Icon(Icons.play_arrow,
-                              color: Colors.white, size: 80),
-                        ),
-                      Positioned(
-                        bottom: 80,
-                        left: 16,
-                        right: 16,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '@Keneni_memorial',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Forever in our hearts ❤️ #memories',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 14),
-                            ),
-                          ],
-                        ),
+                      Text(
+                        '@Keneni_memorial',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
                       ),
-                      Positioned(
-                        bottom: 40,
-                        left: 16,
-                        right: 16,
-                        child: VideoProgressIndicator(
-                          controller,
-                          allowScrubbing: true,
-                          colors: VideoProgressColors(
-                            playedColor: Colors.white,
-                            backgroundColor: Colors.grey.withOpacity(0.5),
-                            bufferedColor: Colors.grey,
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 100,
-                        right: 16,
-                        child: Column(
-                          children: [
-                            IconButton(
-                              icon: Icon(
-                                isLiked
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: isLiked ? Colors.red : Colors.white,
-                                size: 30,
-                              ),
-                              onPressed: () async {
-                                setState(() {
-                                  if (_favoriteVideos.contains(videoUrl)) {
-                                    _favoriteVideos.remove(videoUrl);
-                                  } else {
-                                    _favoriteVideos.add(videoUrl);
-                                  }
-                                });
-                                await _saveFavorites();
-                              },
-                            ),
-                            SizedBox(height: 16),
-                            IconButton(
-                              icon: Icon(Icons.comment_outlined,
-                                  color: Colors.white, size: 30),
-                              onPressed: () {},
-                            ),
-                            SizedBox(height: 16),
-                            IconButton(
-                              icon: Icon(Icons.share,
-                                  color: Colors.white, size: 30),
-                              onPressed: () => _shareVideo(videoUrl),
-                            ),
-                            SizedBox(height: 16),
-                            IconButton(
-                              icon: Icon(Icons.download,
-                                  color: Colors.white, size: 30),
-                              onPressed: () => _downloadVideo(videoUrl),
-                            ),
-                          ],
-                        ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Forever in our hearts ❤️ #memories',
+                        style:
+                        TextStyle(color: Colors.white, fontSize: 14),
                       ),
                     ],
                   ),
-                );
-              },
+                ),
+                Positioned(
+                  bottom: 40,
+                  left: 16,
+                  right: 16,
+                  child: VideoProgressIndicator(
+                    controller,
+                    allowScrubbing: true,
+                    colors: VideoProgressColors(
+                      playedColor: Colors.white,
+                      backgroundColor: Colors.grey.withOpacity(0.5),
+                      bufferedColor: Colors.grey,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 100,
+                  right: 16,
+                  child: Column(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          isLiked
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: isLiked ? Colors.red : Colors.white,
+                          size: 30,
+                        ),
+                        onPressed: () async {
+                          setState(() {
+                            if (_favoriteVideos.contains(videoUrl)) {
+                              _favoriteVideos.remove(videoUrl);
+                            } else {
+                              _favoriteVideos.add(videoUrl);
+                            }
+                          });
+                          await _saveFavorites();
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      IconButton(
+                        icon: Icon(Icons.comment_outlined,
+                            color: Colors.white, size: 30),
+                        onPressed: () {},
+                      ),
+                      SizedBox(height: 16),
+                      IconButton(
+                        icon: Icon(Icons.share,
+                            color: Colors.white, size: 30),
+                        onPressed: () => _shareVideo(videoUrl),
+                      ),
+                      SizedBox(height: 16),
+                      IconButton(
+                        icon: Icon(Icons.download,
+                            color: Colors.white, size: 30),
+                        onPressed: () => _downloadVideo(videoUrl),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
+          );
+        },
+      ),
     );
   }
 }
