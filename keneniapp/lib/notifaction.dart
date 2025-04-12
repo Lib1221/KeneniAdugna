@@ -1,16 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
 
 class MemorialNotifications {
-  // 🕯️ Daily Memorial Notification at 9:00 AM
+  // 🕯️ Daily Memorial Notification at 10:00 AM
   Future<void> scheduleDailyReminder() async {
     final now = DateTime.now();
-    final reminderTime = DateTime(now.year, now.month, now.day, 9, 0);
+    final reminderTime = DateTime(now.year, now.month, now.day, 10, 0);
     final tz.TZDateTime scheduledTime = tz.TZDateTime.from(reminderTime, tz.local);
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
