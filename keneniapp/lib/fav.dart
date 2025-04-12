@@ -13,7 +13,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   List<String> _favoriteImages = [];
   List<String> _favoriteVideos = [];
   final String _profileName = "Keneni Adugna";
-  final String _profileImage = 'a.jpg';
+  final String _profileImage = 'assets/a.jpg';
   bool _showImages = true;
 
   @override
