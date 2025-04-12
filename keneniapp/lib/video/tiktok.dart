@@ -1,17 +1,11 @@
 // ignore_for_file: avoid_web_libraries_in_flutter
 
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'dart:math'; 
 
 class VideoPage extends StatefulWidget {
   @override
@@ -112,50 +106,6 @@ class _VideoPageState extends State<VideoPage> {
     final random = Random();
     allDocs.shuffle(random);
     return allDocs.take(batchSize).toList();
-  }
-
-  Future<void> _downloadVideo(String url) async {
-    if (kIsWeb) {
-      try {
-        print("Web download initiated");
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Video download started!')),
-        );
-      } catch (e) {
-        print('Error downloading video on web: \$e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error downloading video.')),
-        );
-      }
-    } else {
-      try {
-        if (Platform.isAndroid) {
-          var status = await Permission.storage.request();
-          if (!status.isGranted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Storage permission is required.')),
-            );
-            return;
-          }
-        }
-
-        Directory appDocDir = await getApplicationDocumentsDirectory();
-        String filePath = '\${appDocDir.path}/KeneniMemorialVideo.mp4';
-
-        Dio dio = Dio();
-        await dio.download(url, filePath);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Video downloaded successfully!')),
-        );
-      } catch (e) {
-        print('Error downloading video on mobile: \$e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error downloading video.')),
-        );
-      }
-    }
   }
 
   @override
@@ -317,7 +267,7 @@ Explore the Keneni Memorial App — a heartfelt tribute with photos, videos, and
                       IconButton(
                         icon: Icon(Icons.download,
                             color: Colors.white, size: 30),
-                        onPressed: () => _downloadVideo(videoUrl),
+                        onPressed: () {},
                       ),
                     ],
                   ),
