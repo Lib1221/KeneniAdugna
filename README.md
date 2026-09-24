@@ -129,3 +129,14 @@ Developer docs live in [`docs/`](docs/):
 - [Architecture](docs/ARCHITECTURE.md)
 - [Setup](docs/SETUP.md)
 - [Contributing](docs/CONTRIBUTING.md)
+
+## Deploying the web build
+
+Build and publish to the `gh-pages` branch of this repository rather than a separate repo:
+
+```bash
+flutter build web --release --base-href "/KeneniAdugna/"
+git subtree push --prefix build/web origin gh-pages   # or use peaceiris/actions-gh-pages in CI
+```
+
+Then enable GitHub Pages (Settings > Pages > branch `gh-pages`).
