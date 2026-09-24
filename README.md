@@ -121,3 +121,11 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 ## 🌹 Remembering Keneni Adugna
 
 This app is more than just a project; it is a celebration of a life that inspired many. By preserving Keneni's memory, we hope to continue sharing her story and legacy with the world. Thank you for exploring this app and honoring her life.
+
+## Documentation
+
+Developer docs live in [`docs/`](docs/):
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [Setup](docs/SETUP.md)
+- [Contributing](docs/CONTRIBUTING.md)
